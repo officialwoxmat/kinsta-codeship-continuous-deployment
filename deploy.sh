@@ -58,10 +58,11 @@ then
 #    git clone git@git.kinsta.com:${repo}/${REPO_INSTALL}.git ~/deployment
     # Install sshpass
     sudo apt-get install sshpass
-    sshpass -p ${SSH_PASS} ssh -o "PubkeyAuthentication no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT}
-    cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}
-    git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git 
-    git reset –hard kinsta/mysite
+    sshpass -p ${SSH_PASS} ssh -o "PubkeyAuthentication no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard kinsta/mysite"
+#    sshpass -p ${SSH_PASS} ssh -o "PubkeyAuthentication no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT}
+#    cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}
+#    git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git 
+#    git reset –hard kinsta/mysite
 #    ssh -o "PubkeyAuthentication no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard kinsta/mysite"
 #    git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment
 else
