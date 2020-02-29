@@ -57,7 +57,7 @@ then
     force=''
 #    git clone git@git.kinsta.com:${repo}/${REPO_INSTALL}.git ~/deployment
     # Install sshpass
-    apt-get install sshpass
+    sudo apt-get install sshpass
     sshpass -p ${SSH_PASS} ssh ${SSH_NAME}@${SSH_IP}:${SSH_PORT}
     cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}
     git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git 
