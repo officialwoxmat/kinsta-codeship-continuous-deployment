@@ -49,7 +49,7 @@ if [[ $CI_MESSAGE != *#force* ]]
 then
     force=''
 #    git clone git@git.kinsta.com:${repo}/${REPO_INSTALL}.git ~/deployment
-    ssh ${STAGE_NAME}@${STAGE_IP} -p ${STAGE_PORT) "cd /www/${STAGE_UID}/public/${STAGE_DEPLOY} && git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard kinsta/mysite"
+    ssh -o "PubkeyAuthentication no" ${STAGE_NAME}@${STAGE_IP} -p ${STAGE_PORT) "cd /www/${STAGE_UID}/public/${STAGE_DEPLOY} && git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard kinsta/mysite"
 #    git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment
 else
     force='-f'
