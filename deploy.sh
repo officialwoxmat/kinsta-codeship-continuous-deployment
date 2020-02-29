@@ -4,7 +4,7 @@ set -e
 
 # Check for required environment variables and make sure they are setup
 : ${PROJECT_TYPE?"PROJECT_TYPE Missing"} # theme|plugin
-: ${WPE_INSTALL?"WPE_INSTALL Missing"}   # subdomain for wpengine install 
+: ${REPO_INSTALL?"REPO_INSTALL Missing"}   # subdomain for kinsta install 
 : ${REPO_NAME?"REPO_NAME Missing"}       # repo name (Typically the folder name of the project)
 
 # Set repo based on current branch, by default master=production, develop=staging
@@ -48,8 +48,9 @@ rm exclude-list.txt
 if [[ $CI_MESSAGE != *#force* ]]
 then
     force=''
-#    git clone git@git.kinsta.com:${repo}/${WPE_INSTALL}.git ~/deployment
-    git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${WPE_INSTALL}.git ~/deployment
+#    git clone git@git.kinsta.com:${repo}/${REPO_INSTALL}.git ~/deployment
+    ssh ${STAGE_NAME}@${STAGE_IP} -p ${STAGE_PORT) "cd /www/${STAGE_UID}/public/${STAGE_DEPLOY} && git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard kinsta/mysite"
+#    git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment
 else
     force='-f'
     if [ ! -d "~/deployment" ]; then
@@ -91,13 +92,14 @@ rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
 echo "Add remote"
 
-# git remote add ${repo} git@git.kinsta.com:${repo}/${WPE_INSTALL}.git
-git remote add ${repo} https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${WPE_INSTALL}.git
+# git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
+git remote add ${repo} ssh://${STAGE_NAME}:${STAGE_IP}:${STAGE_PORT}/www/${REPO_NAME}/public/${STAGE_NAME}.git
 
 git config --global user.email CI_COMMITTER_EMAIL
 git config --global user.name CI_COMMITTER_NAME
 git config core.ignorecase false
 git add --all
-git commit -am "Deployment to ${WPE_INSTALL} $repo by $CI_COMMITTER_NAME from $CI_NAME"
+git commit -am "Deployment to ${REPO_INSTALL} $repo by $CI_COMMITTER_NAME from $CI_NAME"
 
 git push ${force} ${repo} master
+
