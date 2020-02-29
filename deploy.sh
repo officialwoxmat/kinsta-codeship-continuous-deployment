@@ -5,13 +5,14 @@ set -e
 # Check for required environment variables and make sure they are setup
 : ${PROJECT_TYPE?"PROJECT_TYPE Missing"} # theme|plugin
 : ${REPO_INSTALL?"REPO_INSTALL Missing"}   # subdomain for kinsta install 
-: ${REPO_PASS?"REPO_NAME Missing"}       # repo pass (Typically the password to your CVS)
-: ${REPO_USER?"STAGE_PORT Missing"}       # repo user (Typically the username of your CVS)
-: ${REPO_NAME?"STAGE_PORT Missing"}       # repo name (Typically the folder name of the project)
-: ${STAGE_NAME?"STAGE_NAME Missing"} # SSH username
-: ${STAGE_IP?"STAGE_IP Missing"}   # SSH IP/Domain 
-: ${STAGE_PORT?"STAGE_PORT Missing"}       # SSH Port (Typically the port # of the Stage)
-: ${STAGE_UIDT?"STAGE_UID Missing"}       # Stage Folder (Typically the folder name of the Stage)
+: ${REPO_PASS?"REPO_PASS Missing"}       # repo pass (Typically the password to your CVS)
+: ${REPO_USER?"REPO_USER Missing"}       # repo user (Typically the username of your CVS)
+: ${REPO_NAME?"REPO_NAME Missing"}       # repo name (Typically the folder name of the project)
+: ${SSH_NAME?"SSH_NAME Missing"} # SSH username
+: ${SSH_PASS?"SSH_PASS Missing"} # SSH IP/Domain 
+: ${SSH_IP?"SSH_IP Missing"}   # SSH IP/Domain 
+: ${SSH_PORT?"SSH_PORT Missing"}       # SSH Port (Typically the port # of the Stage)
+: ${STAGE_ROOT?"STAGE_ROOT Missing"}       # Stage Folder (Typically the folder name of the Stage)
 
 # Set repo based on current branch, by default master=production, develop=staging
 # @todo support custom branches
@@ -55,7 +56,13 @@ if [[ $CI_MESSAGE != *#force* ]]
 then
     force=''
 #    git clone git@git.kinsta.com:${repo}/${REPO_INSTALL}.git ~/deployment
-    ssh -o "PubkeyAuthentication no" ${STAGE_NAME}@${STAGE_IP} -p ${STAGE_PORT} "cd /www/${STAGE_UID}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard kinsta/mysite"
+    # Install sshpass
+    apt-get install sshpass
+    sshpass -p ${SSH_PASS} ssh ${SSH_NAME}@${SSH_IP}:${SSH_PORT}
+    cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}
+    git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git 
+    git reset –hard kinsta/mysite
+#    ssh -o "PubkeyAuthentication no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard kinsta/mysite"
 #    git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment
 else
     force='-f'
@@ -99,7 +106,7 @@ rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 echo "Add remote"
 
 # git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
-git remote add ${repo} ssh://${STAGE_NAME}:${STAGE_IP}:${STAGE_PORT}/www/${REPO_NAME}/public/${STAGE_NAME}.git
+git remote add ${repo} ssh://${SSH_NAME}:${SSH_IP}:${SSH_PORT}/www/${REPO_NAME}/public/${SSH_NAME}.git
 
 git config --global user.email CI_COMMITTER_EMAIL
 git config --global user.name CI_COMMITTER_NAME
