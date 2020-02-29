@@ -5,7 +5,13 @@ set -e
 # Check for required environment variables and make sure they are setup
 : ${PROJECT_TYPE?"PROJECT_TYPE Missing"} # theme|plugin
 : ${REPO_INSTALL?"REPO_INSTALL Missing"}   # subdomain for kinsta install 
-: ${REPO_NAME?"REPO_NAME Missing"}       # repo name (Typically the folder name of the project)
+: ${REPO_PASS?"REPO_NAME Missing"}       # repo pass (Typically the password to your CVS)
+: ${REPO_USER?"STAGE_PORT Missing"}       # repo user (Typically the username of your CVS)
+: ${REPO_NAME?"STAGE_PORT Missing"}       # repo name (Typically the folder name of the project)
+: ${STAGE_NAME?"STAGE_NAME Missing"} # SSH username
+: ${STAGE_IP?"STAGE_IP Missing"}   # SSH IP/Domain 
+: ${STAGE_PORT?"STAGE_PORT Missing"}       # SSH Port (Typically the port # of the Stage)
+: ${STAGE_UIDT?"STAGE_UID Missing"}       # Stage Folder (Typically the folder name of the Stage)
 
 # Set repo based on current branch, by default master=production, develop=staging
 # @todo support custom branches
