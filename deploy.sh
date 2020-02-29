@@ -48,8 +48,7 @@ rm exclude-list.txt
 if [[ $CI_MESSAGE != *#force* ]]
 then
     force=''
-#    git clone git@git.kinsta.com:${repo}/${WPE_INSTALL}.git ~/deployment
-    git clone https://github.com/${REPO_NAME}/${WPE_INSTALL}.git ~/deployment
+    git clone git@git.kinsta.com:${repo}/${WPE_INSTALL}.git ~/deployment
 else
     force='-f'
     if [ ! -d "~/deployment" ]; then
@@ -91,8 +90,7 @@ rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
 echo "Add remote"
 
-# git remote add ${repo} git@git.kinsta.com:${repo}/${WPE_INSTALL}.git
-git remote add ${repo} https://github.com/${REPO_NAME}/${WPE_INSTALL}.git
+git remote add ${repo} git@git.kinsta.com:${repo}/${WPE_INSTALL}.git
 
 git config --global user.email CI_COMMITTER_EMAIL
 git config --global user.name CI_COMMITTER_NAME
