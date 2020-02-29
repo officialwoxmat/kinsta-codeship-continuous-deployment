@@ -23,7 +23,7 @@ cd ~/clone
 # Get official list of files/folders that are not meant to be on production if $EXCLUDE_LIST is not set.
 if [[ -z "${EXCLUDE_LIST}" ]];
 then
-    wget https://raw.githubusercontent.com/linchpin/wpengine-codeship-continuous-deployment/master/exclude-list.txt
+    wget https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/exclude-list.txt
 else
     # @todo validate proper url?
     wget ${EXCLUDE_LIST}
@@ -48,7 +48,7 @@ rm exclude-list.txt
 if [[ $CI_MESSAGE != *#force* ]]
 then
     force=''
-    git clone git@git.wpengine.com:${repo}/${WPE_INSTALL}.git ~/deployment
+    git clone git@git.kinsta.com:${repo}/${WPE_INSTALL}.git ~/deployment
 else
     force='-f'
     if [ ! -d "~/deployment" ]; then
@@ -66,7 +66,7 @@ fi
 
 # Move the gitignore file to the deployments folder
 cd ~/deployment
-wget --output-document=.gitignore https://raw.githubusercontent.com/linchpin/wpengine-codeship-continuous-deployment/master/gitignore-template.txt
+wget --output-document=.gitignore https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/gitignore-template.txt
 
 # Delete plugin/theme if it exists, and move cleaned version into deployment folder
 rm -rf /wp-content/${PROJECT_TYPE}s/${REPO_NAME}
@@ -90,7 +90,7 @@ rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
 echo "Add remote"
 
-git remote add ${repo} git@git.wpengine.com:${repo}/${WPE_INSTALL}.git
+git remote add ${repo} git@git.kinsta.com:${repo}/${WPE_INSTALL}.git
 
 git config --global user.email CI_COMMITTER_EMAIL
 git config --global user.name CI_COMMITTER_NAME
