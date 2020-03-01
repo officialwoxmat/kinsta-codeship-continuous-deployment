@@ -114,7 +114,7 @@ git commit -am " User $CI_COMMITTER_NAME deploying to ${REPO_INSTALL} $repo from
 # git rm --cached wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment
 
 echo "Push to repo master branch"
-git push ${force} ${repo} master
+sshpass -e git push ${force} ${repo} master
 
 echo "SSHPASS"
 # sshpass -p ${SSHPASS} ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment"
