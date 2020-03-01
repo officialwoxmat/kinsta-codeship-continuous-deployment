@@ -9,7 +9,7 @@ set -e
 : ${REPO_USER?"REPO_USER Missing"}       # repo user (Typically the username of your CVS)
 : ${REPO_NAME?"REPO_NAME Missing"}       # repo name (Typically the folder name of the project)
 : ${SSH_NAME?"SSH_NAME Missing"} # SSH username
-: ${SSH_PASS?"SSH_PASS Missing"} # SSH IP/Domain 
+: ${SSHPASS?"SSHPASS Missing"} # SSH Password (Used by sshpass as environment variable) 
 : ${SSH_IP?"SSH_IP Missing"}   # SSH IP/Domain 
 : ${SSH_PORT?"SSH_PORT Missing"}       # SSH Port (Typically the port # of the Stage)
 : ${STAGE_ROOT?"STAGE_ROOT Missing"}       # Stage Folder (Typically the folder name of the Stage)
@@ -112,7 +112,6 @@ git push ${force} ${repo} master
 
 # Install sshpass
 sudo apt-get install sshpass
-SSHPASS=${SSH_PASS}
-# sshpass -p ${SSH_PASS} ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment"
+# sshpass -p ${SSHPASS} ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment"
 # ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard $CI_COMMIT_ID"
 sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && git pull origin/master https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git"
