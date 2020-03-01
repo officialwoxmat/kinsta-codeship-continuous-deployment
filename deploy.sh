@@ -107,12 +107,11 @@ git config --global user.email CI_COMMITTER_EMAIL
 git config --global user.name CI_COMMITTER_NAME
 git config core.ignorecase false
 git add --all
-# git add --all ':!/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment'
 git commit -am " User $CI_COMMITTER_NAME deploying to ${REPO_INSTALL} $repo from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
 git rm --cached wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment
 
-sshpass -e git pull --rebase
-sshpass -e git push ${force} --set-upstream ${repo} master
+# sshpass -e git push ${force} --set-upstream ${repo} master
+sshpass -e git push -f --set-upstream ${repo} master
 
 echo "SSHPASS"
 # sshpass -p ${SSHPASS} ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment"
