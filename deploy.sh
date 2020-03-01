@@ -95,6 +95,7 @@ fi
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
 echo "Add remote"
+echo ${SSHPASS}
 # git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
 git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/public/${REPO_NAME}.git
 
