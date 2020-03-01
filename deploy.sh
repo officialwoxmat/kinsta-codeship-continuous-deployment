@@ -95,12 +95,9 @@ fi
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
 echo "Add remote and init Git"
-git init ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}
-git config --global user.email CI_COMMITTER_EMAIL
-git config --global user.name CI_COMMITTER_NAME
-git commit -am "Committing new git tepo ${REPO_NAME}"
+# git init ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 # git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
-git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}.git
+git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/private/${REPO_NAME}.git
 
 # Install sshpass
 sudo apt-get install sshpass
@@ -114,7 +111,7 @@ git add --all
 git commit -am " User $CI_COMMITTER_NAME deploying to ${REPO_INSTALL} $repo from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
 git rm --cached wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment
 
-sshpass -e git push ${force} ${repo} master
+sshpass -e git push ${force} --set-upstream ${repo} master
 
 echo "SSHPASS"
 # sshpass -p ${SSHPASS} ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment"
