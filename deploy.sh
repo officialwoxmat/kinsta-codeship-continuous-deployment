@@ -96,6 +96,8 @@ rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
 echo "Add remote and init Git"
 git init ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}
+git config --global user.email CI_COMMITTER_EMAIL
+git config --global user.name CI_COMMITTER_NAME
 git commit -am "Committing new git tepo ${REPO_NAME}"
 # git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
 git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}.git
