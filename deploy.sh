@@ -94,13 +94,16 @@ fi
 
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
-# Stage, commit, and push to custom GCP repo
-
 echo "Add remote"
-
 # git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
 git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/public/${REPO_NAME}.git
 
+echo "Get SSHPass"
+# Install sshpass
+sudo apt-get install sshpass
+
+echo "STAGE, COMMIT, PUSH"
+# stage, commit, and push to custom GCP repo
 git config --global user.email CI_COMMITTER_EMAIL
 git config --global user.name CI_COMMITTER_NAME
 git config core.ignorecase false
@@ -109,10 +112,10 @@ git add --all
 git commit -am " User $CI_COMMITTER_NAME deploying to ${REPO_INSTALL} $repo from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
 # git rm --cached wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment
 
+echo "Push to repo master branch"
 git push ${force} ${repo} master
 
-# Install sshpass
-sudo apt-get install sshpass
+echo "SSHPASS"
 # sshpass -p ${SSHPASS} ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment"
-# ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git fetch https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard $CI_COMMIT_ID"
+# ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && git clone origin/master https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard $CI_COMMIT_ID"
 sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && git pull origin/master https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git"
