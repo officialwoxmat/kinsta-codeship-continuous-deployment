@@ -6,6 +6,9 @@
 *.swp
 Thumbs.db
 
+# repo specific
+kinsta-codeship-continuous-deployment/
+
 # wordpress specific
 wp-config.php
 wp-content/uploads/
