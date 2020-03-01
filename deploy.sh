@@ -95,7 +95,7 @@ fi
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
 echo "Add remote and init Git"
-git init --bare ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/private/${REPO_NAME}
+git init --bare ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/private/${REPO_NAME}.git
 # git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
 git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/private/${REPO_NAME}.git
 
