@@ -99,19 +99,19 @@ rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
 echo "Add remote"
 
-# Install sshpass
-sudo apt-get install sshpass
 # git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
-sshpass -p ${SSH_PASS} git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/public/${REPO_NAME}.git
+git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/public/${REPO_NAME}.git
 
 git config --global user.email CI_COMMITTER_EMAIL
 git config --global user.name CI_COMMITTER_NAME
 git config core.ignorecase false
 # git add --all
 git add -- . ':!/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment'
-git commit -am "Deploying to ${REPO_INSTALL} $repo from $CI_NAME by $CI_COMMITTER_NAME"
+git commit -am " User $CI_COMMITTER_NAME deploying to ${REPO_INSTALL} $repo from $CI_NAME"
 
 git push ${force} ${repo} master
 
+# Install sshpass
+sudo apt-get install sshpass
 # sshpass -p ${SSH_PASS} ssh -o "PubkeyAuthentication no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME} && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment"
-sshpass -p ${SSH_PASS} ssh -o "PubkeyAuthentication no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && git pull origin/master https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git"
+sudo sshpass -p ${SSH_PASS} ssh -o "PubkeyAuthentication no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && git pull origin/master https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git"
