@@ -94,13 +94,13 @@ fi
 
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
-echo "Add remote and init Git"
-git init --bare ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/private/${REPO_NAME}.git
-# git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
-git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/private/${REPO_NAME}.git
-
 # Install sshpass
 sudo apt-get install sshpass
+
+sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT} && mkdir ./private && git clone origin/develop https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git"
+# git init --bare ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/private/${REPO_NAME}.git
+# git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
+git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/private/${REPO_NAME}.git
 
 # stage, commit, and push to custom GCP repo
 git config --global user.email CI_COMMITTER_EMAIL
