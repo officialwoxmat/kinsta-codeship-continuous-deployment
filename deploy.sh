@@ -94,16 +94,14 @@ fi
 
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
-echo "Add remote"
-echo ${SSHPASS}
+echo "Add remote and init Git"
+git init ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/public/${REPO_NAME}
 # git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
 git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/public/${REPO_NAME}.git
 
-echo "Get SSHPass"
 # Install sshpass
 sudo apt-get install sshpass
 
-echo "STAGE, COMMIT, PUSH"
 # stage, commit, and push to custom GCP repo
 git config --global user.email CI_COMMITTER_EMAIL
 git config --global user.name CI_COMMITTER_NAME
@@ -113,7 +111,6 @@ git add --all
 git commit -am " User $CI_COMMITTER_NAME deploying to ${REPO_INSTALL} $repo from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
 # git rm --cached wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment
 
-echo "Push to repo master branch"
 sshpass -e git push ${force} ${repo} master
 
 echo "SSHPASS"
