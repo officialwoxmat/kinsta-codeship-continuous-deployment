@@ -104,10 +104,10 @@ git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}
 git config --global user.email CI_COMMITTER_EMAIL
 git config --global user.name CI_COMMITTER_NAME
 git config core.ignorecase false
-git add --all
-# git add --all ':!/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment'
+# git add --all
+git add --all ':!/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment'
 git commit -am " User $CI_COMMITTER_NAME deploying to ${REPO_INSTALL} $repo from $CI_NAME - Build ${CI_BUILD_ID} (Commit ${CI_COMMIT_ID})"
-git rm --cached wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment
+# git rm --cached wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment
 
 git push ${force} ${repo} master
 
