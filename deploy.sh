@@ -84,7 +84,7 @@ if [ ! -d "./wp-content/themes" ]; then
     mkdir ./wp-content/themes
 fi
 
-composer update --working-dir=./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
+composer update --working-dir=../clone
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
 # Stage, commit, and push to wpengine repo
