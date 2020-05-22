@@ -85,6 +85,7 @@ if [ ! -d "./wp-content/themes" ]; then
 fi
 
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
+composer update --working-dir=./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
 # Stage, commit, and push to wpengine repo
 
