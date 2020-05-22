@@ -19,6 +19,7 @@ fi
 # Begin from the ~/clone directory
 # this directory is the default your git project is checked out into by Codeship.
 cd ~/clone
+composer update
 
 # Get official list of files/folders that are not meant to be on production if $EXCLUDE_LIST is not set.
 if [[ -z "${EXCLUDE_LIST}" ]];
@@ -84,7 +85,6 @@ if [ ! -d "./wp-content/themes" ]; then
     mkdir ./wp-content/themes
 fi
 
-composer update --working-dir=../clone/
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
 # Stage, commit, and push to wpengine repo
