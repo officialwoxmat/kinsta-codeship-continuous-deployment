@@ -19,7 +19,7 @@ fi
 # Begin from the ~/clone directory
 # this directory is the default your git project is checked out into by Codeship.
 cd ~/clone
-composer update
+composer update --verbose
 
 # Get official list of files/folders that are not meant to be on production if $EXCLUDE_LIST is not set.
 if [[ -z "${EXCLUDE_LIST}" ]];
