@@ -64,23 +64,6 @@ if [ "$?" != "0" ] ; then
     kill -SIGINT $$
 fi
 
-# Compose, commit, and push to src repo
-
-echo "Add remote src"
-# @see https://documentation.codeship.com/basic/continuous-deployment/push-to-remote-repository/
-# git fetch --unshallow || true
-# git push "${REMOTE_REPOSITORY}" "${CI_COMMIT_ID}:${REMOTE_BRANCH}"
-git init
-git remote add ${repo}-src git@github.com:${WPE_INSTALL}/${WPE_INSTALL}.git
-
-git config --global user.email $CI_COMMITTER_EMAIL
-git config --global user.name $CI_COMMITTER_NAME
-git config core.ignorecase false
-git add --all
-git commit -am "Deployment to ${WPE_INSTALL} $repo-src by $CI_COMMITTER_NAME from $CI_NAME"
-
-git push ${force} ${repo}-src develop
-
 # Move the gitignore and composer.json files to the deployments folder
 cd ~/deployment
 wget --output-document=.gitignore https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/gitignore-template.txt
@@ -117,3 +100,13 @@ git add --all
 git commit -am "Deployment to ${WPE_INSTALL} $repo by $CI_COMMITTER_NAME from $CI_NAME"
 
 git push ${force} ${repo} master
+
+# Compose, commit, and push to src repo
+
+echo "Add remote src"
+# @see https://documentation.codeship.com/basic/continuous-deployment/push-to-remote-repository/
+# git fetch --unshallow || true
+# git push "${REMOTE_REPOSITORY}" "${CI_COMMIT_ID}:${REMOTE_BRANCH}"
+
+cd ~/clone
+git push origin develop --force-with-lease
