@@ -64,6 +64,21 @@ if [ "$?" != "0" ] ; then
     kill -SIGINT $$
 fi
 
+# Add clone as src to develop, commit, and push to wpengine repo
+
+echo "Add remote src"
+
+git remote add ${repo}-src git@github.com:${WPE_INSTALL}/${WPE_INSTALL}.git
+
+
+git config --global user.email $CI_COMMITTER_EMAIL
+git config --global user.name $CI_COMMITTER_NAME
+git config core.ignorecase false
+git add --all
+git commit -am "Deployment to ${WPE_INSTALL} $repo-src by $CI_COMMITTER_NAME from $CI_NAME"
+
+git push ${force} ${repo}-src develop
+
 # Move the gitignore and composer.json files to the deployments folder
 cd ~/deployment
 wget --output-document=.gitignore https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/gitignore-template.txt
@@ -93,8 +108,8 @@ echo "Add remote"
 
 git remote add ${repo} git@git.kinsta.com:${repo}/${WPE_INSTALL}.git
 
-git config --global user.email CI_COMMITTER_EMAIL
-git config --global user.name CI_COMMITTER_NAME
+git config --global user.email $CI_COMMITTER_EMAIL
+git config --global user.name $CI_COMMITTER_NAME
 git config core.ignorecase false
 git add --all
 git commit -am "Deployment to ${WPE_INSTALL} $repo by $CI_COMMITTER_NAME from $CI_NAME"
