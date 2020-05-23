@@ -1,0 +1,14 @@
+{
+    "name": "woxmat/woxmat",
+	"description": "A Stripe Enabled Listify Child",
+	"keywords": ["wp", "woxmat", "stripe", "listify"],
+	"homepage": "https://woxmat.com",
+	"authors": [
+	{
+		"name": "dblackherod",
+		"homepage": "https://woxmat.com/profile/dblackherod"
+	}
+	],
+	"type": "wordpress-theme",
+  "license": "MIT",
+}
