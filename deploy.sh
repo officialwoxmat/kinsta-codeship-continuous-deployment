@@ -19,8 +19,6 @@ fi
 # Begin from the ~/clone directory
 # this directory is the default your git project is checked out into by Codeship.
 cd ~/clone
-ls -halt
-# composer update --verbose
 
 # Get official list of files/folders that are not meant to be on production if $EXCLUDE_LIST is not set.
 if [[ -z "${EXCLUDE_LIST}" ]];
@@ -65,6 +63,9 @@ if [ "$?" != "0" ] ; then
     echo "Unable to clone ${repo}"
     kill -SIGINT $$
 fi
+
+# Update composer packsges
+composer update --verbose
 
 # Move the gitignore file to the deployments folder
 cd ~/deployment
