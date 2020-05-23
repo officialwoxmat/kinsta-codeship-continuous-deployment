@@ -88,7 +88,6 @@ if [ ! -d "./wp-content/themes" ]; then
 fi
 
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
-ls -halt
 
 # Stage, commit, and push to wpengine repo
 
@@ -103,4 +102,3 @@ git add --all
 git commit -am "Deployment to ${WPE_INSTALL} $repo by $CI_COMMITTER_NAME from $CI_NAME"
 
 git push ${force} ${repo} master
-ls -halt
