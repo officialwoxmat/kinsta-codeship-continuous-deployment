@@ -70,7 +70,7 @@ echo "Add remote src"
 # @see https://documentation.codeship.com/basic/continuous-deployment/push-to-remote-repository/
 # git fetch --unshallow || true
 # git push "${REMOTE_REPOSITORY}" "${CI_COMMIT_ID}:${REMOTE_BRANCH}"
-
+git init
 git remote add ${repo}-src git@github.com:${WPE_INSTALL}/${WPE_INSTALL}.git
 
 git config --global user.email $CI_COMMITTER_EMAIL
