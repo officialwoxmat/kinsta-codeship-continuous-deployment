@@ -64,9 +64,6 @@ if [ "$?" != "0" ] ; then
     kill -SIGINT $$
 fi
 
-# Update composer packsges
-composer update --verbose
-
 # Move the gitignore file to the deployments folder
 cd ~/deployment
 wget --output-document=.gitignore https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/gitignore-template.txt
