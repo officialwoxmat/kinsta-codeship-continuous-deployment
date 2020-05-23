@@ -64,9 +64,10 @@ if [ "$?" != "0" ] ; then
     kill -SIGINT $$
 fi
 
-# Move the gitignore file to the deployments folder
+# Move the gitignore and composer.json files to the deployments folder
 cd ~/deployment
 wget --output-document=.gitignore https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/gitignore-template.txt
+wget --output-document=composer.json https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/composer-template.json
 
 # Delete plugin/theme if it exists, and move cleaned version into deployment folder
 rm -rf /wp-content/${PROJECT_TYPE}s/${REPO_NAME}
