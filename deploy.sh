@@ -43,11 +43,6 @@ done
 # Remove exclude-list file
 rm exclude-list.txt
 
-# Init Git in cloned repository and push
-echo "Initialize GIT in repository clone and push to origin branch"
-git init
-git push origin develop --force-with-lease
-
 # Clone the WPEngine files to the deployment directory
 # if we are not force pushing our changes
 if [[ $CI_MESSAGE != *#force* ]]
@@ -68,6 +63,10 @@ if [ "$?" != "0" ] ; then
     echo "Unable to clone ${repo}"
     kill -SIGINT $$
 fi
+
+# Add and Commit updated vendor libraries
+echo "Commit composer updates to origin branch"
+git commit -a
 
 # Move the gitignore and composer.json files to the deployments folder
 cd ~/deployment
