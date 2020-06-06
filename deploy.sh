@@ -43,6 +43,11 @@ done
 # Remove exclude-list file
 rm exclude-list.txt
 
+# Init Git in cloned repository and push
+echo "Initialize GIT in repository clone and push to origin branch"
+git init
+git push origin develop --force-with-lease
+
 # Clone the WPEngine files to the deployment directory
 # if we are not force pushing our changes
 if [[ $CI_MESSAGE != *#force* ]]
@@ -107,6 +112,3 @@ echo "Add remote src"
 # @see https://documentation.codeship.com/basic/continuous-deployment/push-to-remote-repository/
 # git fetch --unshallow || true
 # git push "${REMOTE_REPOSITORY}" "${CI_COMMIT_ID}:${REMOTE_BRANCH}"
-
-cd ~/clone
-git push origin develop --force-with-lease
