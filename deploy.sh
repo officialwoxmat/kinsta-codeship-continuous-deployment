@@ -42,6 +42,7 @@ done
 
 # Remove exclude-list file
 rm exclude-list.txt
+rm composer.lock
 
 # Clone the WPEngine files to the deployment directory
 # if we are not force pushing our changes
@@ -66,7 +67,9 @@ fi
 
 # Add and Commit updated vendor libraries
 echo "Commit composer updates to origin branch"
-git commit -a
+git init
+git add --all
+git commit -am "Commit to ${WPE_INSTALL} $repo by $CI_COMMITTER_NAME from $CI_NAME"
 
 # Move the gitignore and composer.json files to the deployments folder
 cd ~/deployment
