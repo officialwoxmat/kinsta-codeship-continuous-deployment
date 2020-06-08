@@ -42,7 +42,6 @@ done
 
 # Remove exclude-list file
 rm exclude-list.txt
-rm composer.lock
 
 # Clone the WPEngine files to the deployment directory
 # if we are not force pushing our changes
