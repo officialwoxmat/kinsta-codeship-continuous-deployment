@@ -93,8 +93,8 @@ echo "Add remote"
 
 git remote add ${repo} git@git.kinsta.com:${repo}/${WPE_INSTALL}.git
 
-git config --global user.email $CI_COMMITTER_EMAIL
-git config --global user.name $CI_COMMITTER_NAME
+git config --global user.email "noreply@woxmat.com"
+git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
 git add --all
 git commit -am "Deployment to ${WPE_INSTALL} $repo by $CI_COMMITTER_NAME from $CI_NAME"
