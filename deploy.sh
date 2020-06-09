@@ -64,12 +64,6 @@ if [ "$?" != "0" ] ; then
     kill -SIGINT $$
 fi
 
-# Add and Commit updated vendor libraries
-echo "Commit composer updates to origin branch"
-git init
-git add --all
-git commit -am "Commit to ${WPE_INSTALL} $repo by $CI_COMMITTER_NAME from $CI_NAME"
-
 # Move the gitignore and composer.json files to the deployments folder
 cd ~/deployment
 wget --output-document=.gitignore https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/gitignore-template.txt
