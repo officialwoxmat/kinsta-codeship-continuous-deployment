@@ -60,10 +60,10 @@ git add --all
 git diff --cached --name-only --diff-filter=ACMR
 if [ "$?" != "0" ]
 then
-git commit -am "Commit to ${CI_BRANCH} by $CI_NAME"
-git push origin HEAD:develop
+    git commit -am "Commit to ${CI_BRANCH} by $CI_NAME"
+    git push origin HEAD:develop
 else
-echo "No Changes Since Last Deployment"
+    echo "No Changes Since Last Deployment"
 fi
 
 # Clone the WPEngine files to the deployment directory
