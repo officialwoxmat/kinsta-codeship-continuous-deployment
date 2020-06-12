@@ -55,7 +55,7 @@ rm exclude-list.txt
 if [[ $CI_MESSAGE != *#force* ]]
 then
     force=''
-#    git clone git@git.kinsta.com:${repo}/${REPO_INSTALL}.git ~/deployment
+    #git clone git@git.kinsta.com:${repo}/${REPO_INSTALL}.git ~/deployment
     git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment
 else
     force='-f'
@@ -70,6 +70,22 @@ fi
 if [ "$?" != "0" ] ; then
     echo "Unable to clone ${repo}"
     kill -SIGINT $$
+fi
+
+# Add, commit and push updated vendor libraries
+# Comment out these lines if composer.json is not updated
+# TODO: Cleaner and more elegant implementation of conditional pipeline commits
+git config --global user.email "noreply@woxmat.com"
+git config --global user.name "Woxmat Dev"
+git config core.ignorecase false
+git add --all
+git diff --cached --name-only --diff-filter=ACMR
+if [ "$?" != "0" ]
+then
+    git commit -am "Commit to ${CI_BRANCH} by $CI_NAME"
+    git push origin HEAD:develop
+else
+    echo "No changes since last deployment"
 fi
 
 # Move the gitignore file to the deployments folder
