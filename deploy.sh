@@ -72,22 +72,6 @@ if [ "$?" != "0" ] ; then
     kill -SIGINT $$
 fi
 
-# Add, commit and push updated vendor libraries
-# Comment out these lines if composer.json is not updated
-# TODO: Cleaner and more elegant implementation of conditional pipeline commits
-git config --global user.email "noreply@woxmat.com"
-git config --global user.name "Woxmat Dev"
-git config core.ignorecase false
-git add --all
-git diff --cached --name-only --diff-filter=ACMR
-if [ "$?" != "0" ]
-then
-    git commit -am "Commit to ${CI_BRANCH} by $CI_NAME"
-    git push origin HEAD:develop
-else
-    echo "No changes since last deployment"
-fi
-
 # Move the gitignore file to the deployments folder
 cd ~/deployment
 wget --output-document=.gitignore https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/gitignore-template.txt
