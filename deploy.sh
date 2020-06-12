@@ -50,6 +50,22 @@ done
 # Remove exclude-list file
 rm exclude-list.txt
 
+# Add, commit and push updated vendor libraries
+# Comment out these lines if composer.json is not updated
+# TODO: Cleaner and more elegant implementation of conditional pipeline commits
+git config --global user.email "noreply@woxmat.com"
+git config --global user.name "Woxmat Dev"
+git config core.ignorecase false
+git add --all
+git diff --cached --name-only --diff-filter=ACMR
+if [ "$?" != "0" ]
+then
+git commit -am "Commit to ${CI_BRANCH} by $CI_NAME"
+git push origin HEAD:develop
+else
+echo "No Changes Since Last Deployment"
+fi
+
 # Clone the WPEngine files to the deployment directory
 # if we are not force pushing our changes
 if [[ $CI_MESSAGE != *#force* ]]
