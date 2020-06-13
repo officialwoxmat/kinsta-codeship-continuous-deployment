@@ -15,7 +15,7 @@ set -e
 : ${STAGE_ROOT?"STAGE_ROOT Missing"}       # Stage Folder (Typically the folder name of the Stage)
 
 # Set repo based on current branch, by default master=production, develop=staging
-# @TODO support custom branches
+# @todo support custom branches
 if [ "$CI_BRANCH" == "master" ]
 then
     repo=production
@@ -50,8 +50,8 @@ done
 # Remove exclude-list file
 rm exclude-list.txt
 
-# Add, commit and push updated vendor libraries
-# @TODO: Cleaner and more elegant conditional pipeline commits
+# Add, commit and push updated composer dependencies
+# @todo: Cleaner and more elegant conditional pipeline commits
 git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
@@ -59,7 +59,7 @@ git ls-files . --exclude-standard --others
 if [ "$?" == "0" ]
 then
     git add --all
-    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_USERNAME with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
+    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
     git push origin HEAD:develop
 else
     echo "======================**[ No Changes Since Last Deployment Build ]**======================"
@@ -117,16 +117,20 @@ git remote add ${repo} https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}
 # git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/private/${REPO_NAME}.git
 # git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
 
-# stage, commit, and push to custom GCP repo
-git config --global user.email CI_COMMITTER_EMAIL
-git config --global user.name CI_COMMITTER_NAME
+# Add, commit, and push to custom GCP repo
+git config --global user.email "noreply@woxmat.com"
+git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
-git rm --cached wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment
-git add --all
-git commit -am " Deployment by $CI_COMMITTER_USERNAME to $CI_REPO_NAME (${REPO_INSTALL}:$repo) from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
-
-sshpass -e git push ${force} --set-upstream ${repo} master
-# sshpass -e git push -f --set-upstream ${repo} master
+mv kinsta-codeship-continuous-deployment/gitignore-template.txt .gitignore && rm -rf kinsta-codeship-continuous-deployment/
+if [ "$?" == "0"]
+then
+    git add --all
+    git commit -am " Deployment to $CI_REPO_NAME:$CI_BRANCH ($repo) by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
+    git push ${force} --set-upstream ${repo} master
+    # sshpass -e git push ${force} --set-upstream ${repo} master
+else
+    echo "======================**[ No Deletes Since Last .GitIgnore Build ]**======================"
+fi
 
 # ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && git clone origin/master https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard $CI_COMMIT_ID"
 # sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && rm -rf ${REPO_NAME} && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ${REPO_NAME}_tmp && rsync -av --delete --exclude '.git' ${REPO_NAME}_tmp . && rm -rf ${REPO_NAME}_tmp"
