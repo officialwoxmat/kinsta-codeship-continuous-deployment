@@ -1,6 +1,6 @@
 #!/bin/bash
 # If any commands fail (exit code other than 0) entire script exits
-set -e
+set +e
 
 # Check for required environment variables and make sure they are setup
 : ${PROJECT_TYPE?"PROJECT_TYPE Missing"} # theme|plugin
