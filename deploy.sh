@@ -15,7 +15,7 @@ set -e
 : ${STAGE_ROOT?"STAGE_ROOT Missing"}       # Stage Folder (Typically the folder name of the Stage)
 
 # Set repo based on current branch, by default master=production, develop=staging
-# @todo support custom branches
+# @TODO support custom branches
 if [ "$CI_BRANCH" == "master" ]
 then
     repo=production
@@ -51,13 +51,12 @@ done
 rm exclude-list.txt
 
 # Add, commit and push updated vendor libraries
-# Comment out these lines if composer.json is not updated
-# TODO: Cleaner and more elegant implementation of conditional pipeline commits
+# @TODO: Cleaner and more elegant conditional pipeline commits
 git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
 git ls-files . --exclude-standard --others
-if [ "$?" != "0" ]
+if [ "$?" == "0" ]
 then
     git add --all
     git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_USERNAME with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
@@ -124,7 +123,7 @@ git config --global user.name CI_COMMITTER_NAME
 git config core.ignorecase false
 git rm --cached wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment
 git add --all
-git commit -am " User $CI_COMMITTER_USERNAME deploying to $CI_REPO_NAME (${REPO_INSTALL}:$repo) from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
+git commit -am " Deployment by $CI_COMMITTER_USERNAME to $CI_REPO_NAME (${REPO_INSTALL}:$repo) from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
 
 sshpass -e git push ${force} --set-upstream ${repo} master
 # sshpass -e git push -f --set-upstream ${repo} master
