@@ -23,9 +23,11 @@ else
     repo=staging
 fi
 
-# Begin from the ~/clone directory
-# this directory is the default your git project is checked out into by Codeship.
-cd ~/clone
+# Check we're in the ~/clone directory, and switch to it if not.
+# ~/clone is the default your git project is checked out into by Codeship.
+if [["$PWD" != "~/clone"]] ; then
+    cd ~/clone
+fi
 
 # Get official list of files/folders that are not meant to be on production if $EXCLUDE_LIST is not set.
 if [[ -z "${EXCLUDE_LIST}" ]];
