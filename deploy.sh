@@ -25,9 +25,7 @@ fi
 
 # Check we're in the ~/clone directory, and switch to it if not.
 # ~/clone is the default your git project is checked out into by Codeship.
-#if [["$PWD" != "~/clone"]] ; then
-echo "Current Directory is $PWD"
-#fi
+cd ~/clone
 
 # Get official list of files/folders that are not meant to be on production if $EXCLUDE_LIST is not set.
 if [[ -z "${EXCLUDE_LIST}" ]];
