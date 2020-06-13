@@ -58,9 +58,9 @@ git config core.ignorecase false
 git ls-files . --exclude-standard --others
 if [ "$?" == "0" ]
 then
-    git pull
     git add --all
     git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
+    git pull --rebase
     git push --force-with-lease origin HEAD:develop
 else
     echo "======================**[ No Changes Since Last Deployment Build ]**======================"
