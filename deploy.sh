@@ -1,6 +1,6 @@
 #!/bin/bash
 # If any commands fail (exit code other than 0) entire script exits
-set +e
+set -e
 
 # Check for required environment variables and make sure they are setup
 : ${PROJECT_TYPE?"PROJECT_TYPE Missing"} # theme|plugin
@@ -57,13 +57,14 @@ git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
 git add --all
-git diff --cached --name-only --diff-filter=ACMR
+# git diff --name-only --diff-filter=ACMR
+git ls-files . --exclude-standard --others
 if [ "$?" != "0" ]
 then
-    git commit -am "Commit to ${CI_BRANCH} by $CI_NAME"
+    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_USERNAME with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
     git push origin HEAD:develop
 else
-    echo "No Changes Since Last Deployment"
+    echo "======================**[ No Changes Since Last Deployment Build ]**======================"
 fi
 
 # Clone the WPEngine files to the deployment directory
@@ -123,9 +124,9 @@ git remote add ${repo} https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}
 git config --global user.email CI_COMMITTER_EMAIL
 git config --global user.name CI_COMMITTER_NAME
 git config core.ignorecase false
-git add --all
-git commit -am " User $CI_COMMITTER_NAME deploying to ${REPO_INSTALL} $repo from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
 git rm --cached wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment
+git add --all
+git commit -am " User $CI_COMMITTER_USERNAME deploying to $CI_REPO_NAME (${REPO_INSTALL}:$repo) from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
 
 sshpass -e git push ${force} --set-upstream ${repo} master
 # sshpass -e git push -f --set-upstream ${repo} master
