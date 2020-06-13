@@ -122,8 +122,7 @@ git remote add ${repo} https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}
 git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
-mv kinsta-codeship-continuous-deployment/master/gitignore-template.txt .gitignore && rm -rf kinsta-codeship-continuous-deployment/
-if [ "$?" == "0"]
+if [ -f "./.gitignore" ]
 then
     git add --all
     git commit -am " Deployment to $CI_REPO_NAME:$CI_BRANCH ($repo) by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
