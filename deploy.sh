@@ -121,7 +121,7 @@ git remote add ${repo} https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}
 git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
-mv kinsta-codeship-continuous-deployment/gitignore-template.txt .gitignore && rm -rf kinsta-codeship-continuous-deployment/
+mv kinsta-codeship-continuous-deployment/master/gitignore-template.txt .gitignore && rm -rf kinsta-codeship-continuous-deployment/
 if [ "$?" == "0"]
 then
     git add --all
