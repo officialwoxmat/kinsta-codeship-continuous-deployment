@@ -49,8 +49,8 @@ for ITEM in $ITEMS; do
 done
 
 # Remove exclude-list file
-rm exclude-list.txt
-rm -rf kinsta-continuous-deployment/
+# rm exclude-list.txt
+rm -rf kinsta-codeship-continuous-deployment/
 
 # Add, commit and push updated composer dependencies
 # @todo: Cleaner and more elegant conditional pipeline commits
@@ -61,6 +61,7 @@ git ls-files . --exclude-standard --others
 if [ "$?" == "0" ]
 then
     git add --all
+    git reset HEAD kinsta-codeship-continuous-deployment
     git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
     git pull origin develop
     git push --force-with-lease origin HEAD:develop
