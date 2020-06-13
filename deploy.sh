@@ -56,19 +56,17 @@ rm exclude-list.txt
 git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
-git add --all
-# git diff --name-only --diff-filter=ACMR
 git ls-files . --exclude-standard --others
 if [ "$?" != "0" ]
 then
+    git add --all
     git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_USERNAME with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
     git push origin HEAD:develop
 else
     echo "======================**[ No Changes Since Last Deployment Build ]**======================"
 fi
 
-# Clone the WPEngine files to the deployment directory
-# if we are not force pushing our changes
+# Clone application files to the deployment directory if we are not force pushing our changes
 if [[ $CI_MESSAGE != *#force* ]]
 then
     force=''
