@@ -26,6 +26,7 @@ fi
 # Check we're in the ~/clone directory, and switch to it if not.
 # This is the default your git project is checked out into by Codeship.
 cd ~/clone
+wget --output-document=.gitignore https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/gitignore-template.txt
 
 # Get official list of files/folders that are not meant to be on production if $EXCLUDE_LIST is not set.
 if [[ -z "${EXCLUDE_LIST}" ]];
@@ -49,6 +50,7 @@ done
 
 # Remove exclude-list file
 rm exclude-list.txt
+rm -rf kinsta-continuous-deployment/
 
 # Add, commit and push updated composer dependencies
 # @todo: Cleaner and more elegant conditional pipeline commits
