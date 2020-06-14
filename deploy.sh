@@ -61,8 +61,8 @@ git config remote.origin.prune true
 git ls-files . --exclude-standard --others
 if [ "$?" == "0" ]
 then
-    git add --all
     git reset HEAD kinsta-codeship-continuous-deployment
+    git add --all
     git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
     git pull --rebase origin develop
     git push --force-with-lease origin HEAD:develop
