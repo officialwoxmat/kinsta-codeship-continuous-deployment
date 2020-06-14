@@ -60,12 +60,13 @@ git config remote.origin.prune true
 git ls-files . --exclude-standard --others
 if [ "$?" == "0" ]
 then
-    git add --all
     SUBS=`git ls-files --stage | grep "^160000 " | perl -ne 'chomp;split;print "$_[3]\n"'`
     for SUB in $SUBS; do
         # git reset HEAD $SUB
         git rm --cached $SUB
+        echo "Removed $SUB submodule"
     done
+    git add --all
     git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
     git pull --rebase origin develop
     git push --force-with-lease origin HEAD:develop
