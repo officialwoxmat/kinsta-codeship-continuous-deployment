@@ -56,22 +56,23 @@ rm exclude-list.txt
 git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
-git config remote.origin.prune true
 git ls-files . --exclude-standard --others
 if [ "$?" == "0" ]
 then
     git add --all
     git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
-    git pull --rebase origin develop
-    if [ "$?" != "0" ]; then
-        SUBS=`git ls-files --stage | grep "^160000 " | perl -ne 'chomp;split;print "$_[3]\n"'`
+    SUBS=`git ls-files --stage | grep "^160000 " | perl -ne 'chomp;split;print "$_[3]\n"'`
+    if [ "$?" == "0" ]; then
         for SUB in $SUBS; do
+            git config submodule.$SUB.ignore all
+            git config submodule.$SUB.active false
             git reset HEAD $SUB
             git rm --cached $SUB
             echo "Removed $SUB submodule"
         done
-        git rebase --continue
+        #git rebase --continue
     fi
+    git pull --rebase origin develop
     git push --force-with-lease origin HEAD:develop
 else
     echo "======================**[ No Changes Since Last Deployment Build ]**======================"
