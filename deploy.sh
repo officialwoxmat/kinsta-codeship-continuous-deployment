@@ -57,7 +57,7 @@ rm -rf kinsta-codeship-continuous-deployment/
 git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
-git config remote.origin.prune true
+git config remote.woxmat.prune true
 git ls-files . --exclude-standard --others
 if [ "$?" == "0" ]
 then
