@@ -63,7 +63,7 @@ then
     git add --all
     git reset HEAD kinsta-codeship-continuous-deployment
     git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
-    git pull origin develop
+    git pull --rebase origin develop
     git push --force-with-lease origin HEAD:develop
 else
     echo "======================**[ No Changes Since Last Deployment Build ]**======================"
