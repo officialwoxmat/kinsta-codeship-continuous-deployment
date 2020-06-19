@@ -82,6 +82,9 @@ then
     git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
     git pull --rebase origin $CI_BRANCH                 # Apply local changes atop remote changes.
     git push --force-with-lease origin HEAD:$CI_BRANCH  # Push (no forced overwrites) changes to remote repository.
+    # @see https://documentation.codeship.com/basic/continuous-deployment/push-to-remote-repository/
+    # git fetch --unshallow || true
+    # git push "${REMOTE_REPOSITORY}" "${CI_COMMIT_ID}:${REMOTE_BRANCH}"
 else
     echo "======================**[ No Changes Since Last Deployment Build ]**======================"
 fi
@@ -145,7 +148,6 @@ then
     git add --all
     git commit -am " Deployment to $CI_REPO_NAME:$CI_BRANCH ($repo) by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
     git push ${force} --set-upstream ${repo} master
-    # sshpass -e git push ${force} --set-upstream ${repo} master
 else
     echo "======================**[ No Deletes Since Last .gitignore Build ]**======================"
 fi
