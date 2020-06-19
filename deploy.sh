@@ -1,14 +1,17 @@
 #!/bin/bash
-# If any commands fail (exit code other than 0) entire script exits
 set -e
 
-# Check for required environment variables and make sure they are setup
-: ${PROJECT_TYPE?"PROJECT_TYPE Missing"} # theme|plugin
-: ${WPE_INSTALL?"WPE_INSTALL Missing"}   # subdomain for wpengine install 
-: ${REPO_NAME?"REPO_NAME Missing"}       # repo name (Typically the folder name of the project)
+: ${PROJECT_TYPE?"PROJECT_TYPE Missing"} 
+: ${REPO_INSTALL?"REPO_INSTALL Missing"} 
+: ${REPO_PASS?"REPO_PASS Missing"}       
+: ${REPO_USER?"REPO_USER Missing"}       
+: ${REPO_NAME?"REPO_NAME Missing"}       
+: ${SSH_NAME?"SSH_NAME Missing"}         
+: ${SSHPASS?"SSHPASS Missing"}           
+: ${SSH_IP?"SSH_IP Missing"}             
+: ${SSH_PORT?"SSH_PORT Missing"}         
+: ${STAGE_ROOT?"STAGE_ROOT Missing"}     
 
-# Set repo based on current branch, by default master=production, develop=staging
-# @todo support custom branches
 if [ "$CI_BRANCH" == "master" ]
 then
     repo=production
@@ -16,20 +19,16 @@ else
     repo=staging
 fi
 
-# Begin from the ~/clone directory
-# this directory is the default your git project is checked out into by Codeship.
 cd ~/clone
+wget --output-document=.gitignore https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/gitignore-template.txt
 
-# Get official list of files/folders that are not meant to be on production if $EXCLUDE_LIST is not set.
 if [[ -z "${EXCLUDE_LIST}" ]];
 then
     wget https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/exclude-list.txt
 else
-    # @todo validate proper url?
     wget ${EXCLUDE_LIST}
 fi
 
-# Loop over list of files/folders and remove them from deployment
 ITEMS=`cat exclude-list.txt`
 for ITEM in $ITEMS; do
     if [[ $ITEM == *.* ]]
@@ -40,15 +39,39 @@ for ITEM in $ITEMS; do
     fi
 done
 
-# Remove exclude-list file
-rm exclude-list.txt
+rm exclude-list.txt     
 
-# Clone the WPEngine files to the deployment directory
-# if we are not force pushing our changes
+git config --global user.email "noreply@woxmat.com"
+git config --global user.name "Woxmat Bld"
+git config --global core.ignorecase false
+git ls-files . --exclude-standard --others
+if [ "$?" == "0" ]
+then
+    git add --all
+    SUBS=$(git ls-files --stage | grep "^160000 " | perl -ne 'chomp;split;print "$_[3]\n"')
+    if [ -z "$SUBS" ]
+    then
+        echo "======================**[ No Submodules in Parent Repository ]**======================"
+    else
+        for SUB in $SUBS; do
+            git submodule deinit -f -- $SUB     
+            rm -rf .git/modules/$SUB            
+            git rm -f $SUB                      
+            echo "======================**[ Submodule $SUB Removed ]**======================"
+        done
+    fi
+    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
+    git pull --rebase origin $CI_BRANCH               
+    git push --force-with-lease origin HEAD:$CI_BRANCH
+else
+    echo "======================**[ No Changes Since Last Deployment Build ]**======================"
+fi
+
 if [[ $CI_MESSAGE != *#force* ]]
 then
     force=''
-    git clone git@git.kinsta.com:${repo}/${WPE_INSTALL}.git ~/deployment
+    #git clone git@git.kinsta.com:${repo}/${REPO_INSTALL}.git ~/deployment
+    git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/deployment
 else
     force='-f'
     if [ ! -d "~/deployment" ]; then
@@ -58,52 +81,42 @@ else
     fi
 fi
 
-# If there was a problem cloning, exit
 if [ "$?" != "0" ] ; then
-    echo "Unable to clone ${repo}"
+    echo "Unable to Clone ${repo}"
     kill -SIGINT $$
 fi
 
-# Move the gitignore and composer.json files to the deployments folder
 cd ~/deployment
 wget --output-document=.gitignore https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/gitignore-template.txt
-wget --output-document=composer.json https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/composer-template.json
 
-# Delete plugin/theme if it exists, and move cleaned version into deployment folder
 rm -rf /wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
-# Check to see if the wp-content directory exists, if not create it
 if [ ! -d "./wp-content" ]; then
     mkdir ./wp-content
 fi
-# Check to see if the plugins directory exists, if not create it
 if [ ! -d "./wp-content/plugins" ]; then
     mkdir ./wp-content/plugins
 fi
-# Check to see if the themes directory exists, if not create it
 if [ ! -d "./wp-content/themes" ]; then
     mkdir ./wp-content/themes
 fi
 
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
-# Stage, commit, and push to wpengine repo
+sudo apt-get install sshpass
 
-echo "Add remote"
-
-git remote add ${repo} git@git.kinsta.com:${repo}/${WPE_INSTALL}.git
+sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT} && rm -rf private/ && git clone --branch develop https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/private"
+git remote add ${repo} https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git
 
 git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
-git add --all
-git commit -am "Deployment to ${WPE_INSTALL} $repo by $CI_COMMITTER_NAME from $CI_NAME"
-
-git push ${force} ${repo} master
-
-# Compose, commit, and push to src repo
-
-echo "Add remote src"
-# @see https://documentation.codeship.com/basic/continuous-deployment/push-to-remote-repository/
-# git fetch --unshallow || true
-# git push "${REMOTE_REPOSITORY}" "${CI_COMMIT_ID}:${REMOTE_BRANCH}"
+if [ -f "./.gitignore" ]
+then
+    git add --all
+    git commit -am " Deployment to $CI_REPO_NAME:$CI_BRANCH ($repo) by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
+    git push ${force} --set-upstream ${repo} master
+else
+    echo "======================**[ No Deletes Since Last .gitignore Build ]**======================"
+fi
+sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && rm -rf ${REPO_NAME}_tmp && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ${REPO_NAME}_tmp && cp -R ~/public/${REPO_NAME}_tmp/wp-content/. ~/public/wp-content/. && rm -rf ${REPO_NAME}_tmp && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/.git && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment"
