@@ -49,11 +49,6 @@ for ITEM in $ITEMS; do
 done
 
 rm exclude-list.txt     # Remove exclude-list file
-# Remove this repository folder from requesting repository.
-# This will be a submodule if cloned from requesting repository.
-if [ -d "./kinsta-codeship-continuous-deployment" ]; then
-    rm -fvr ./kinsta-codeship-continuous-deployment
-fi
 
 # Add, commit and push updated composer dependencies
 # @todo: Cleaner and more elegant conditional pipeline commits
@@ -69,6 +64,14 @@ then
     if [ -z "$SUBS" ]
     then
         echo "======================**[ No Submodules in Parent Repository ]**======================"
+        # Remove this repository folder from requesting repository.
+        # This will be a submodule if cloned from requesting repository.
+        if [ -d "./kinsta-codeship-continuous-deployment" ]; then
+            git submodule deinit -f -- kinsta-codeship-continuous-deployment
+            rm -fvr ./kinsta-codeship-continuous-deployment && rm -fvr .git/modules/kinsta-codeship-continuous-deployment
+            git rm --cached -r ./kinsta-codeship-continuous-deployment
+            echo "===============**[ OfficialWoxmat CICD Repository Deleted ]**==============="
+        fi
     else
         for SUB in $SUBS; do
             # Move current branch to specified commit
@@ -161,3 +164,5 @@ fi
 # ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && git clone origin/master https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard $CI_COMMIT_ID"
 # sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && rm -rf ${REPO_NAME} && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ${REPO_NAME}_tmp && rsync -av --delete --exclude '.git' ${REPO_NAME}_tmp . && rm -rf ${REPO_NAME}_tmp"
 sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && rm -rf ${REPO_NAME}_tmp && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ${REPO_NAME}_tmp && cp -R ~/public/${REPO_NAME}_tmp/wp-content/. ~/public/wp-content/. && rm -rf ${REPO_NAME}_tmp && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/.git && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment"
+# Truncate and delete script after execution
+shred -uv "$0"
