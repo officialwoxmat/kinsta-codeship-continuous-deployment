@@ -59,7 +59,6 @@ git ls-files . --exclude-standard --others
 if [ "$?" == "0" ]
 then
     git add --all
-    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
     # Check for submodules and remove from parent repository
     SUBS=$(git ls-files --stage | grep "^160000 " | perl -ne 'chomp;split;print "$_[3]\n"')
     if [ -z "$SUBS" ]
@@ -80,6 +79,7 @@ then
         done
         #git rebase --continue
     fi
+    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
     git pull --rebase origin $CI_BRANCH                 # Apply local changes atop remote changes.
     git push --force-with-lease origin HEAD:$CI_BRANCH  # Push (no forced overwrites) changes to remote repository.
 else
@@ -103,7 +103,7 @@ fi
 
 # If there was a problem cloning, exit
 if [ "$?" != "0" ] ; then
-    echo "Unable to clone ${repo}"
+    echo "Unable to Clone ${repo}"
     kill -SIGINT $$
 fi
 
