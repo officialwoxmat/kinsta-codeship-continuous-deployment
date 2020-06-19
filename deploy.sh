@@ -60,7 +60,7 @@ then
             echo "======================**[ Submodule $SUB Removed ]**======================"
         done
     fi
-    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
+    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME --skip-ci"
     git pull --rebase origin $CI_BRANCH               
     git push --force-with-lease origin HEAD:$CI_BRANCH
 else
@@ -114,7 +114,7 @@ git config core.ignorecase false
 if [ -f "./.gitignore" ]
 then
     git add --all
-    git commit -am " Deployment to $CI_REPO_NAME:$CI_BRANCH ($repo) by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
+    git commit -am "Deployment to $CI_REPO_NAME:$CI_BRANCH ($repo) by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
     git push ${force} --set-upstream ${repo} master
 else
     echo "======================**[ No Deletes Since Last .gitignore Build ]**======================"
