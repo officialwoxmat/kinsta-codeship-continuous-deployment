@@ -40,11 +40,6 @@ for ITEM in $ITEMS; do
 done
 
 rm exclude-list.txt
-if [ -d "./kinsta-codeship-continuous-deployment" ]; then
-    rm -fvr ./kinsta-codeship-continuous-deployment
-    rm -fvr .git/modules/kinsta-codeship-continuous-deployment
-    git rm -r ./kinsta-codeship-continuous-deployment
-fi
 
 git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Bld"
@@ -56,20 +51,26 @@ then
     SUBS=$(git ls-files --stage | grep "^160000 " | perl -ne 'chomp;split;print "$_[3]\n"')
     if [ -z "$SUBS" ]
     then
-        echo "======================**[ No Submodules in Parent Repository ]**======================"
+        echo "====================**[ No Submodules in Parent Repository ]**===================="
+        if [ -d "./kinsta-codeship-continuous-deployment" ]; then
+            git submodule deinit -f -- kinsta-codeship-continuous-deployment
+            rm -fvr ./kinsta-codeship-continuous-deployment && rm -fvr .git/modules/kinsta-codeship-continuous-deployment
+            git rm --cached -r ./kinsta-codeship-continuous-deployment
+            echo "===============**[ OfficialWoxmat CICD Repository Deleted ]**==============="
+        fi
     else
         for SUB in $SUBS; do
             git submodule deinit -f -- $SUB     
-            rm -rf .git/modules/$SUB            
+            rm -fvr .git/modules/$SUB            
             git rm -f $SUB                      
-            echo "======================**[ Submodule $SUB Removed ]**======================"
+            echo "====================**[ Submodule $SUB Removed ]**===================="
         done
     fi
     git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME --skip-ci"
     git pull --rebase origin $CI_BRANCH               
     git push --force-with-lease origin HEAD:$CI_BRANCH
 else
-    echo "======================**[ No Changes Since Last Deployment Build ]**======================"
+    echo "====================**[ No Changes Since Last Deployment Build ]**===================="
 fi
 
 if [[ $CI_MESSAGE != *#force* ]]
@@ -122,6 +123,6 @@ then
     git commit -am "Deployment to $CI_REPO_NAME:$CI_BRANCH ($repo) by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) from $CI_NAME - Build $CI_BUILD_ID (Commit $CI_COMMIT_ID)"
     git push ${force} --set-upstream ${repo} master
 else
-    echo "======================**[ No Deletes Since Last .gitignore Build ]**======================"
+    echo "====================**[ No Deletes Since Last .gitignore Build ]**===================="
 fi
 sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && rm -rf ${REPO_NAME}_tmp && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ${REPO_NAME}_tmp && cp -R ~/public/${REPO_NAME}_tmp/wp-content/. ~/public/wp-content/. && rm -rf ${REPO_NAME}_tmp && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/.git && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment"
