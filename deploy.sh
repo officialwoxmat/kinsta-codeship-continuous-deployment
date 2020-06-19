@@ -4,15 +4,15 @@ set -e
 
 # Check for required environment variables and make sure they are setup
 : ${PROJECT_TYPE?"PROJECT_TYPE Missing"} # theme|plugin
-: ${REPO_INSTALL?"REPO_INSTALL Missing"}   # subdomain for kinsta install 
+: ${REPO_INSTALL?"REPO_INSTALL Missing"} # subdomain for kinsta install 
 : ${REPO_PASS?"REPO_PASS Missing"}       # repo pass (Typically the password to your CVS)
 : ${REPO_USER?"REPO_USER Missing"}       # repo user (Typically the username of your CVS)
 : ${REPO_NAME?"REPO_NAME Missing"}       # repo name (Typically the folder name of the project)
-: ${SSH_NAME?"SSH_NAME Missing"} # SSH username
-: ${SSHPASS?"SSHPASS Missing"} # SSH Password (Used by sshpass as environment variable) 
-: ${SSH_IP?"SSH_IP Missing"}   # SSH IP/Domain 
-: ${SSH_PORT?"SSH_PORT Missing"}       # SSH Port (Typically the port # of the Stage)
-: ${STAGE_ROOT?"STAGE_ROOT Missing"}       # Stage Folder (Typically the folder name of the Stage)
+: ${SSH_NAME?"SSH_NAME Missing"}         # SSH username
+: ${SSHPASS?"SSHPASS Missing"}           # SSH Password (Used by sshpass as environment variable) 
+: ${SSH_IP?"SSH_IP Missing"}             # SSH IP/Domain 
+: ${SSH_PORT?"SSH_PORT Missing"}         # SSH Port (Typically the port # of the Stage)
+: ${STAGE_ROOT?"STAGE_ROOT Missing"}     # Stage Folder (Typically the folder name of the Stage)
 
 # Set repo based on current branch, by default master=production, develop=staging
 # @todo support custom branches
@@ -48,8 +48,7 @@ for ITEM in $ITEMS; do
     fi
 done
 
-# Remove exclude-list file
-rm exclude-list.txt
+rm exclude-list.txt     # Remove exclude-list file
 
 # Add, commit and push updated composer dependencies
 # @todo: Cleaner and more elegant conditional pipeline commits
@@ -61,23 +60,28 @@ if [ "$?" == "0" ]
 then
     git add --all
     git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
+    # Check for submodules and remove from parent repository
     SUBS=$(git ls-files --stage | grep "^160000 " | perl -ne 'chomp;split;print "$_[3]\n"')
     if [ -z "$SUBS" ]
     then
         echo "======================**[ No Submodules in Parent Repository ]**======================"
     else
         for SUB in $SUBS; do
-            git config --global submodule.$SUB.ignore all
-            git config --global submodule.$SUB.active false
-            git config --global submodule.$SUB.update none
-            git reset HEAD $SUB
-            git rm --cached $SUB
-            echo "Removed $SUB submodule"
+            # Move current branch to specified commit
+            # Use HEAD to specify current commit
+            # Use +/- to indicate forward/backward movement (eg. HEAD+4, HEAD-2)
+            #git reset HEAD $SUB
+            #git rm --cached $SUB            # Remove submodule directory from git index
+            #==================**[ Uncomment either above or below commands ]**==================#
+            git submodule deinit -f -- $SUB     # Remove submodule entry from .git/config
+            rm -rf .git/modules/$SUB            # Remove submodule directory from superproject's .git/modules directory
+            git rm -f $SUB                      # Remove entry in .gitmodules and submodule directory at path/to/submodule
+            echo "======================**[ Submodule $SUB Removed ]**======================"
         done
         #git rebase --continue
     fi
-    git pull --rebase origin develop
-    git push --force-with-lease origin HEAD:develop
+    git pull --rebase origin $CI_BRANCH                 # Apply local changes atop remote changes.
+    git push --force-with-lease origin HEAD:$CI_BRANCH  # Push (no forced overwrites) changes to remote repository.
 else
     echo "======================**[ No Changes Since Last Deployment Build ]**======================"
 fi
@@ -107,8 +111,7 @@ fi
 cd ~/deployment
 wget --output-document=.gitignore https://raw.githubusercontent.com/officialwoxmat/kinsta-codeship-continuous-deployment/master/gitignore-template.txt
 
-# Delete plugin/theme if it exists, and move cleaned version into deployment folder
-rm -rf /wp-content/${PROJECT_TYPE}s/${REPO_NAME}
+rm -rf /wp-content/${PROJECT_TYPE}s/${REPO_NAME}    # Delete plugin/theme if it exists in deployments folder.
 
 # Check to see if the wp-content directory exists, if not create it
 if [ ! -d "./wp-content" ]; then
@@ -125,8 +128,7 @@ fi
 
 rsync -a ../clone/* ./wp-content/${PROJECT_TYPE}s/${REPO_NAME}
 
-# Install sshpass
-sudo apt-get install sshpass
+sudo apt-get install sshpass    # Install sshpass
 
 sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT} && rm -rf private/ && git clone --branch develop https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ~/private"
 git remote add ${repo} https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git
@@ -134,7 +136,7 @@ git remote add ${repo} https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}
 # git remote add ${repo} ssh://${SSH_NAME}@${SSH_IP}:${SSH_PORT}/www/${STAGE_ROOT}/private/${REPO_NAME}.git
 # git remote add ${repo} git@git.kinsta.com:${repo}/${REPO_INSTALL}.git
 
-# Add, commit, and push to custom GCP repo
+# Add, commit, and push to custom (Kinsta) GCP repository
 git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Dev"
 git config core.ignorecase false
@@ -145,7 +147,7 @@ then
     git push ${force} --set-upstream ${repo} master
     # sshpass -e git push ${force} --set-upstream ${repo} master
 else
-    echo "======================**[ No Deletes Since Last .GitIgnore Build ]**======================"
+    echo "======================**[ No Deletes Since Last .gitignore Build ]**======================"
 fi
 
 # ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && git clone origin/master https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard $CI_COMMIT_ID"
