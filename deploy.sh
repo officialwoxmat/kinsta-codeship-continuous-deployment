@@ -79,7 +79,8 @@ then
         done
         #git rebase --continue
     fi
-    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
+    # Update repository with Composer dependencies and skip build for this commit, merge, and push action(s)
+    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME --skip-ci"
     git pull --rebase origin $CI_BRANCH                 # Apply local changes atop remote changes.
     git push --force-with-lease origin HEAD:$CI_BRANCH  # Push (no forced overwrites) changes to remote repository.
     # @see https://documentation.codeship.com/basic/continuous-deployment/push-to-remote-repository/
