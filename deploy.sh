@@ -49,6 +49,11 @@ for ITEM in $ITEMS; do
 done
 
 rm exclude-list.txt     # Remove exclude-list file
+# Remove this repository folder from requesting repository.
+# This will be a submodule if cloned from requesting repository.
+if [ -d "./kinsta-codeship-continuous-deployment" ]; then
+    rm -fvr ./kinsta-codeship-continuous-deployment
+fi
 
 # Add, commit and push updated composer dependencies
 # @todo: Cleaner and more elegant conditional pipeline commits
