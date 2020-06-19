@@ -39,7 +39,10 @@ for ITEM in $ITEMS; do
     fi
 done
 
-rm exclude-list.txt     
+rm exclude-list.txt
+if [ -d "./kinsta-codeship-continuous-deployment" ]; then
+    rm -fvr ./kinsta-codeship-continuous-deployment
+fi
 
 git config --global user.email "noreply@woxmat.com"
 git config --global user.name "Woxmat Bld"
