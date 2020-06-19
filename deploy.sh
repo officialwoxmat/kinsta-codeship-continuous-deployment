@@ -53,7 +53,7 @@ rm exclude-list.txt     # Remove exclude-list file
 # Add, commit and push updated composer dependencies
 # @todo: Cleaner and more elegant conditional pipeline commits
 git config --global user.email "noreply@woxmat.com"
-git config --global user.name "Woxmat Dev"
+git config --global user.name "Woxmat Bld"
 git config --global core.ignorecase false
 git ls-files . --exclude-standard --others
 if [ "$?" == "0" ]
@@ -152,4 +152,4 @@ fi
 
 # ssh -o "PubkeyAuthentication=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && git clone origin/master https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git && git reset –hard $CI_COMMIT_ID"
 # sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && rm -rf ${REPO_NAME} && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ${REPO_NAME}_tmp && rsync -av --delete --exclude '.git' ${REPO_NAME}_tmp . && rm -rf ${REPO_NAME}_tmp"
-sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && rm -rf ${REPO_NAME}_tmp && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ${REPO_NAME}_tmp && cp -R ~/public/${REPO_NAME}_tmp/wp-content/. ~/public/wp-content/. && rm -rf ${REPO_NAME}_tmp && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/.git"
+sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && rm -rf ${REPO_NAME}_tmp && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ${REPO_NAME}_tmp && cp -R ~/public/${REPO_NAME}_tmp/wp-content/. ~/public/wp-content/. && rm -rf ${REPO_NAME}_tmp && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/.git && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment"
