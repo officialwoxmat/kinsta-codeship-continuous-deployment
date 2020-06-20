@@ -126,5 +126,3 @@ else
     echo "====================**[ No Deletes Since Last .gitignore Build ]**===================="
 fi
 sshpass -e ssh -o "StrictHostKeyChecking=no" ${SSH_NAME}@${SSH_IP} -p ${SSH_PORT} "cd /www/${STAGE_ROOT}/public && rm -rf ${REPO_NAME}_tmp && git clone https://${REPO_USER}:${REPO_PASS}@github.com/${REPO_NAME}/${REPO_INSTALL}.git ${REPO_NAME}_tmp && cp -R ~/public/${REPO_NAME}_tmp/wp-content/. ~/public/wp-content/. && rm -rf ${REPO_NAME}_tmp && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/.git && rm -rf ~/public/wp-content/${PROJECT_TYPE}s/${REPO_NAME}/kinsta-codeship-continuous-deployment"
-
-shred -uv "$0"
