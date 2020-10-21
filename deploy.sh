@@ -66,7 +66,8 @@ then
             echo "====================**[ Submodule $SUB Removed ]**===================="
         done
     fi
-    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME --skip-ci"
+    #git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME --skip-ci"
+    git commit -am "$CI_REPO_NAME:$CI_BRANCH updated by $CI_COMMITTER_NAME($CI_COMMITTER_USERNAME) with Composer Commit ($CI_COMMIT_ID) from $CI_NAME"
     git pull --rebase origin $CI_BRANCH               
     git push --force-with-lease origin HEAD:$CI_BRANCH
 else
